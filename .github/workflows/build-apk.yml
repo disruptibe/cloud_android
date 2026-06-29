@@ -1,4 +1,4 @@
-name: Compilar APK Privada Disrup-ti.be (Final)
+name: Compilar APK Privada Disrup-ti.be (Forzado)
 
 on:
   push:
@@ -33,12 +33,15 @@ jobs:
         mkdir -p ~/.gradle
         echo "org.gradle.jvmargs=-Xmx4g -XX:MaxMetaspaceSize=1g -Dfile.encoding=UTF-8" >> ~/.gradle/gradle.properties
         echo "android.lintOptions.abortOnError=false" >> ~/.gradle/gradle.properties
+        # Crear un archivo de propiedades de Sentry falso para evitar que la compilación falle por falta de este componente
+        echo "defaults.project=fake-project" > sentry.properties
+        echo "defaults.org=fake-org" >> sentry.properties
 
-    - name: Limpiar y Compilar APK de Organización
+    - name: Limpiar y Compilar APK de Organización (Evasión de Fallos)
       run: |
         chmod +x gradlew
-        # Usamos assembleGenericDebug para saltar el bloqueo de propiedades de firma de producción de Nextcloud
-        ./gradlew clean assembleGenericDebug -x test -x lint --no-daemon
+        # -P... Desactiva el plugin de Sentry y las firmas comerciales integradas de Nextcloud
+        ./gradlew clean assembleGenericDebug -x test -x lint -PdisableSentryPlugin=true -Pandroid.experimental.self-signed=true --no-daemon
 
     - name: Publicar APK para descarga interna
       uses: actions/upload-artifact@v4
