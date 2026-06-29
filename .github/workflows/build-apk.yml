@@ -1,4 +1,4 @@
-name: Compilar APK Privada Disrup-ti.be (Estable)
+name: Compilar APK Privada Disrup-ti.be (Corrección Gradle)
 
 on:
   push:
@@ -28,10 +28,15 @@ jobs:
         echo "defaults.project=fake-project" > sentry.properties
         echo "defaults.org=fake-org" >> sentry.properties
 
-    - name: Ejecutar Compilación con Gradle Action
+    # Inicializa el entorno de Gradle de forma segura con la acción oficial v4
+    - name: Configurar Gradle
       uses: gradle/actions/setup-gradle@v4
-      with:
-        arguments: assembleGenericDebug -x test -x lint -x extractDeepLinks -PdisableSentryPlugin=true
+
+    # Ejecuta el comando clásico por separado para evitar el parámetro obsoleto
+    - name: Compilar con comandos nativos
+      run: |
+        chmod +x gradlew
+        ./gradlew assembleGenericDebug -x test -x lint -x extractDeepLinks -PdisableSentryPlugin=true --no-daemon
 
     - name: Publicar APK para descarga interna
       uses: actions/upload-artifact@v4
