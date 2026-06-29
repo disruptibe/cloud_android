@@ -1,4 +1,4 @@
-name: Compilar APK Privada Disrup-ti.be (Estabilizado)
+name: Compilar APK Privada Disrup-ti.be (Solución Java)
 
 on:
   push:
@@ -14,11 +14,11 @@ jobs:
     - name: Checkout del código fuente
       uses: actions/checkout@v4
 
-    - name: Configurar Java JDK 17
+    - name: Configurar Java JDK 11 (Requerido para compilación nativa)
       uses: actions/setup-java@v4
       with:
         distribution: 'zulu'
-        java-version: '17'
+        java-version: '11'
         cache: 'gradle'
 
     - name: Aceptar Licencias de Android SDK de manera oficial
@@ -36,7 +36,7 @@ jobs:
         echo "defaults.project=fake-project" > sentry.properties
         echo "defaults.org=fake-org" >> sentry.properties
 
-    - name: Preparar Entorno Gradle (Download Dependencies)
+    - name: Preparar Entorno Gradle
       run: |
         chmod +x gradlew
         ./gradlew --no-daemon
