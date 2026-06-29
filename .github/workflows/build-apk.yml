@@ -1,4 +1,4 @@
-name: Build and Sign Disrup-ti.be Cloud APK
+name: Build and Sign Disrup-ti.be Cloud APK.
 
 # Cuándo se ejecutará esta acción:
 on:
