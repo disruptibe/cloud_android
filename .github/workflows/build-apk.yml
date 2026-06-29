@@ -1,0 +1,43 @@
+name: Compilar APK Disrup-ti.be CLoud (Automática)
+
+on:
+  push:
+    branches:
+      - disruptibe-branding
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout del código fuente
+      uses: actions/checkout@v4
+
+    - name: Configurar Java JDK 17
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'zulu'
+        java-version: '17'
+        cache: 'gradle'
+
+    - name: Generar Keystore Temporal Automático
+      run: |
+        keytool -genkey -v -keystore app/disruptibe-release.jks -keyalg RSA -keysize 2048 -validity 10000 -alias disruptibe-key -storepass "PasswordTemporal123" -keypass "PasswordTemporal123" -dname "CN=disrup-ti.be, O=Disruptibe, C=ES"
+
+    - name: Compilar y Firmar APK de Producción
+      env:
+        STORE_FILE: "disruptibe-release.jks"
+        STORE_PASSWORD: "PasswordTemporal123"
+        KEY_ALIAS: "disruptibe-key"
+        KEY_PASSWORD: "PasswordTemporal123"
+      run: |
+        chmod +x gradlew
+        ./gradlew assembleRelease
+
+    - name: Publicar APK para descarga interna
+      uses: actions/upload-artifact@v4
+      with:
+        name: App-Disruptibe-Release
+        path: app/build/outputs/apk/release/*.apk
+        retention-days: 7
