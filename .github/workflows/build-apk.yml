@@ -3,7 +3,7 @@ name: Build and Sign Disrup-ti.be Cloud APK.
 # Cuándo se ejecutará esta acción:
 on:
   push:
-    branches: [ "master", "main" ]
+    branches: [ "disruptibe-branding" ]
   workflow_dispatch: # Esto habilita un botón para ejecutarlo manualmente cuando quieras
 
 jobs:
