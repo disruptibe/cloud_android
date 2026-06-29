@@ -1,4 +1,4 @@
-name: Compilar APK Disrup-ti.be Cloud (Optimizado)
+name: Compilar APK Privada Disrup-ti.be (Estable)
 
 on:
   push:
@@ -21,19 +21,25 @@ jobs:
         java-version: '17'
         cache: 'gradle'
 
-    - name: Configurar Memoria y Desactivar Errores Estrictos
+    - name: Aceptar Licencias de Android SDK de manera oficial
+      run: |
+        mkdir -p ${{ linux.android_home || '$ANDROID_HOME' }}/licenses
+        echo "24a33b3b76716dd559ebbc13321545bf8476a16e" > ${{ linux.android_home || '$ANDROID_HOME' }}/licenses/android-sdk-license
+        echo "84831b9409646a918e30573bab4c9c91346d8abd" > ${{ linux.android_home || '$ANDROID_HOME' }}/licenses/android-sdk-preview-license
+        # Forzar la aceptación interactiva en segundo plano
+        yes | ${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager --licenses || true
+
+    - name: Configurar Entorno de Compilación
       run: |
         mkdir -p ~/.gradle
-        # Asigna suficiente memoria al compilador en la nube
-        echo "org.gradle.jvmargs=-Xmx4g -XX:MaxMetaspaceSize=1g -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8" >> ~/.gradle/gradle.properties
-        # Indica a Android que ignore errores menores de lint/advertencias que detienen el build
+        echo "org.gradle.jvmargs=-Xmx4g -XX:MaxMetaspaceSize=1g -Dfile.encoding=UTF-8" >> ~/.gradle/gradle.properties
         echo "android.lintOptions.abortOnError=false" >> ~/.gradle/gradle.properties
 
     - name: Generar Keystore Temporal Automático
       run: |
         keytool -genkey -v -keystore app/disruptibe-release.jks -keyalg RSA -keysize 2048 -validity 10000 -alias disruptibe-key -storepass "PasswordTemporal123" -keypass "PasswordTemporal123" -dname "CN=disrup-ti.be, O=Disruptibe, C=ES"
 
-    - name: Compilar y Firmar APK de Producción
+    - name: Limpiar y Compilar APK de Producción
       env:
         STORE_FILE: "disruptibe-release.jks"
         STORE_PASSWORD: "PasswordTemporal123"
@@ -41,8 +47,7 @@ jobs:
         KEY_PASSWORD: "PasswordTemporal123"
       run: |
         chmod +x gradlew
-        # Se añade x- lint para ignorar alertas cosméticas del compilador
-        ./gradlew assembleRelease -x test -x lint
+        ./gradlew clean assembleRelease -x test -x lint --no-daemon
 
     - name: Publicar APK para descarga interna
       uses: actions/upload-artifact@v4
