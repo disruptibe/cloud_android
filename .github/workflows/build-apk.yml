@@ -1,10 +1,9 @@
-name: Build and Sign Disrup-ti.be Cloud APK.
+name: Build and Sign Nextcloud APK
 
-# Cuándo se ejecutará esta acción:
 on:
   push:
-    branches: [ "disruptibe-branding" ]
-  workflow_dispatch: # Esto habilita un botón para ejecutarlo manualmente cuando quieras
+    branches: [ "master", "main" ]
+  workflow_dispatch:
 
 jobs:
   build:
@@ -25,20 +24,19 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Compilar el APK (Release)
-        # Nota: Si Nextcloud requiere una variante específica, puede que necesites cambiar 
-        # "assembleRelease" por "assembleGenericRelease" o "assembleGplayRelease"
-        run: ./gradlew assembleRelease
+        run: ./gradlew assembleGenericRelease
 
       - name: Firmar el APK con los Secrets
         uses: r0adkll/sign-android-release@v1
         id: sign_app
         with:
-          # Busca el APK generado (la ruta puede variar dependiendo de los 'flavors' de Nextcloud)
           releaseDirectory: app/build/outputs/apk/generic/release
           signingKeyBase64: ${{ secrets.SIGNING_KEY }}
           alias: ${{ secrets.ALIAS }}
           keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
           keyPassword: ${{ secrets.KEY_PASSWORD }}
+          # Especificamos una versión moderna de Build Tools disponible en el sistema
+          buildToolsVersion: 34.0.0
 
       - name: Subir el APK final para descargar
         uses: actions/upload-artifact@v4
