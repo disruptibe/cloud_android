@@ -1,4 +1,4 @@
-name: Compilar APK Privada Disrup-ti.be (Solución Java)
+name: Compilar APK Privada Disrup-ti.be (Solución DeepLinks)
 
 on:
   push:
@@ -14,11 +14,11 @@ jobs:
     - name: Checkout del código fuente
       uses: actions/checkout@v4
 
-    - name: Configurar Java JDK 11 (Requerido para compilación nativa)
+    - name: Configurar Java JDK 17 (Requerido por Nextcloud Moderno)
       uses: actions/setup-java@v4
       with:
         distribution: 'zulu'
-        java-version: '11'
+        java-version: '17'
         cache: 'gradle'
 
     - name: Aceptar Licencias de Android SDK de manera oficial
@@ -36,14 +36,11 @@ jobs:
         echo "defaults.project=fake-project" > sentry.properties
         echo "defaults.org=fake-org" >> sentry.properties
 
-    - name: Preparar Entorno Gradle
+    - name: Compilar APK Evadiendo Tareas de Enlaces
       run: |
         chmod +x gradlew
-        ./gradlew --no-daemon
-
-    - name: Compilar APK Genérico de Organización
-      run: |
-        ./gradlew assembleGenericDebug -x test -x lint -PdisableSentryPlugin=true --no-daemon
+        # -x ... Apaga los exámenes de código y la extracción de enlaces profundos que causaban la caída a los 6 minutos
+        ./gradlew assembleGenericDebug -x test -x lint -x extractDeepLinks -PdisableSentryPlugin=true --no-daemon
 
     - name: Publicar APK para descarga interna
       uses: actions/upload-artifact@v4
