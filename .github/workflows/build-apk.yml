@@ -2,7 +2,7 @@ name: Build and Sign Nextcloud APK
 
 on:
   push:
-    branches: [ "master", "main" ]
+    branches: [ "disruptibe-branding" ]
   workflow_dispatch:
 
 jobs:
