@@ -34,7 +34,7 @@ jobs:
         id: sign_app
         with:
           # Busca el APK generado (la ruta puede variar dependiendo de los 'flavors' de Nextcloud)
-          releaseDirectory: app/build/outputs/apk/release
+          releaseDirectory: app/build/outputs/apk/generic/release
           signingKeyBase64: ${{ secrets.SIGNING_KEY }}
           alias: ${{ secrets.ALIAS }}
           keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
