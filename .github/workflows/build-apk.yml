@@ -23,11 +23,10 @@ jobs:
 
     - name: Aceptar Licencias de Android SDK de manera oficial
       run: |
-        mkdir -p ${{ linux.android_home || '$ANDROID_HOME' }}/licenses
-        echo "24a33b3b76716dd559ebbc13321545bf8476a16e" > ${{ linux.android_home || '$ANDROID_HOME' }}/licenses/android-sdk-license
-        echo "84831b9409646a918e30573bab4c9c91346d8abd" > ${{ linux.android_home || '$ANDROID_HOME' }}/licenses/android-sdk-preview-license
-        # Forzar la aceptación interactiva en segundo plano
-        yes | ${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager --licenses || true
+        mkdir -p $ANDROID_HOME/licenses
+        echo "24a33b3b76716dd559ebbc13321545bf8476a16e" > $ANDROID_HOME/licenses/android-sdk-license
+        echo "84831b9409646a918e30573bab4c9c91346d8abd" > $ANDROID_HOME/licenses/android-sdk-preview-license
+        yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
 
     - name: Configurar Entorno de Compilación
       run: |
