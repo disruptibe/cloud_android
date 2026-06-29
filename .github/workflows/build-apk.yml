@@ -14,11 +14,21 @@ jobs:
       - name: Descargar el código fuente
         uses: actions/checkout@v4
 
-      - name: Configurar Java 21
+      - name: Configurar Java 21 y Caché de Gradle
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '21'
+          cache: 'gradle' # <-- Esta es la instrucción que activa la caché
+
+      - name: Aceptar licencias del SDK de Android
+        run: yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
+
+      - name: Instalar Android Build Tools
+        run: echo "y" | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "build-tools;33.0.2"
+
+      - name: Instalar Android NDK
+        run: echo "y" | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "ndk;25.2.9519653"
 
       - name: Dar permisos a Gradle
         run: chmod +x ./gradlew
