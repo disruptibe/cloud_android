@@ -46,11 +46,13 @@ jobs:
         KEY_PASSWORD: "PasswordTemporal123"
       run: |
         chmod +x gradlew
-        ./gradlew clean assembleRelease -x test -x lint --no-daemon
+        ./gradlew clean assembleGenericRelease -x test -x lint --no-daemon
+
 
     - name: Publicar APK para descarga interna
       uses: actions/upload-artifact@v4
       with:
         name: App-Disruptibe-Release
-        path: app/build/outputs/apk/release/*.apk
+        path: app/build/outputs/apk/generic/release/*.apk
         retention-days: 7
+
